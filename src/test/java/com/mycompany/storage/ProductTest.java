@@ -27,17 +27,17 @@ public class ProductTest {
         otherProduct.setName("Product");
         assertProductEqualsAndHashcode(product, otherProduct);
 
-        product.setId(23);
+        product.setId((long) 23);
         assertProductNotEqualsAndHashcode(product, otherProduct);
 
-        otherProduct.setId(23);
+        otherProduct.setId((long) 23);
         assertProductEqualsAndHashcode(product, otherProduct);
 
         product.setName(null);
         otherProduct.setName(null);
         assertProductEqualsAndHashcode(product, otherProduct);
 
-        product.setId(15);
+        product.setId((long) 15);
         assertProductNotEqualsAndHashcode(product, otherProduct);
     }
 

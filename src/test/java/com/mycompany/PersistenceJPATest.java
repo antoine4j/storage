@@ -2,17 +2,15 @@ package com.mycompany;
 
 import com.mycompany.domain.Category;
 import com.mycompany.domain.Product;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,44 +21,32 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Anton Fomin
  */
-public class PersistenceTest {
+public class PersistenceJPATest {
 
-    private static SessionFactory sessionFactory;
+    private static EntityManagerFactory entityManagerFactory;
 
-    private Session session;
+    private EntityManager entityManager;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        // A SessionFactory is set up once for an application!
-        final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
-                .configure() // configures settings from hibernate.cfg.xml
-                .build();
-        try {
-            sessionFactory = new MetadataSources( registry ).buildMetadata().buildSessionFactory();
-        }
-        catch (Exception e) {
-            // The registry would be destroyed by the SessionFactory, but we had trouble building the SessionFactory
-            // so destroy it manually.
-            StandardServiceRegistryBuilder.destroy( registry );
-            throw e;
-        }
+        entityManagerFactory = Persistence.createEntityManagerFactory("com.mycompany");
     }
 
     @AfterClass
     public static void afterClass() {
-        sessionFactory.close();
+        entityManagerFactory.close();
     }
 
     @Before
     public void before() {
-        session = sessionFactory.openSession();
-        session.beginTransaction();
+        entityManager = entityManagerFactory.createEntityManager();
+        entityManager.getTransaction().begin();
     }
 
     @After
     public void after() {
-        session.getTransaction().commit();
-        session.close();
+        entityManager.getTransaction().commit();
+        entityManager.close();
     }
 
     @Test
@@ -70,22 +56,22 @@ public class PersistenceTest {
         Category category = new Category();
         category.setName("My Category");
 
-        session.save(product);
-        session.save(category);
+        entityManager.persist(product);
+        entityManager.persist(category);
 
         product.setCategory(category);
         Set<Product> prods = new HashSet<Product>();
         prods.add(product);
         category.setProducts(prods);
 
-        session.save(category);
+        entityManager.persist(category);
 
         @SuppressWarnings("unchecked")
-        List<Product> products = session.createQuery( "from Product" ).list();
+        List<Product> products = entityManager.createQuery( "from Product" ).getResultList();
         assertEquals(1, products.size());
 
         @SuppressWarnings("unchecked")
-        List<Category> categories = session.createQuery( "from Category" ).list();
+        List<Category> categories = entityManager.createQuery( "from Category" ).getResultList();
         assertEquals(1, categories.size());
 
         assertEquals(product, products.get(0));

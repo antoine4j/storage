@@ -14,18 +14,18 @@ public class Category {
 
     @Id
     @GeneratedValue
-    private int id;
+    private Long id;
 
     private String name;
 
     @OneToMany
     private Set<Product> products;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -52,7 +52,7 @@ public class Category {
 
         Category category = (Category) o;
 
-        if (id != category.id) return false;
+        if (id != null ? !id.equals(category.id) : category.id != null) return false;
         if (name != null ? !name.equals(category.name) : category.name != null) return false;
 
         return true;
@@ -60,7 +60,7 @@ public class Category {
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
     }

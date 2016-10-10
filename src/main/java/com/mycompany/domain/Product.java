@@ -13,18 +13,18 @@ public class Product {
 
     @Id
     @GeneratedValue
-    private int id;
+    private Long id;
 
     private String name;
 
     @ManyToOne
     private Category category;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -51,7 +51,7 @@ public class Product {
 
         Product product = (Product) o;
 
-        if (id != product.id) return false;
+        if (id != null ? !id.equals(product.id) : product.id != null) return false;
         if (name != null ? !name.equals(product.name) : product.name != null) return false;
 
         return true;
@@ -59,7 +59,7 @@ public class Product {
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
     }
